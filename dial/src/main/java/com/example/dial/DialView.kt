@@ -71,15 +71,15 @@ private enum class IndicatorType {
     START, END
 }
 
-enum class DutyTimeType {
+enum class TimeType {
     PREVIOUS, CURRENT, NEXT
 }
 
-enum class DutyTimeEditType {
+enum class TimeEditType {
     SPLIT, EDIT, NORMAL
 }
 
-data class EditDutyTime(var start: Int, var end: Int, val type: DutyTimeType) {
+data class EditDutyTime(var start: Int, var end: Int, val type: TimeType) {
     init {
         if (start >= 24) {
             start = 0
@@ -95,7 +95,7 @@ fun DialView(
     start: Int,
     end: Int,
     limitRange: IntRange = start..end,
-    editType: DutyTimeEditType,
+    editType: TimeEditType,
     hasPre: Boolean = false,
     hasNext: Boolean = false,
     modifier: Modifier = Modifier,
@@ -160,13 +160,13 @@ fun DialView(
     fun getResultList(): List<EditDutyTime> {
         val resultList = mutableListOf<EditDutyTime>()
         when (editType) {
-            DutyTimeEditType.SPLIT -> {
+            TimeEditType.SPLIT -> {
                 if (startTime != limitRange.first) {
                     resultList.add(
                         EditDutyTime(
                             start = limitRange.first,
                             end = startTime,
-                            type = DutyTimeType.PREVIOUS
+                            type = TimeType.PREVIOUS
                         )
                     )
                 }
@@ -174,7 +174,7 @@ fun DialView(
                     EditDutyTime(
                         start = startTime,
                         end = endTime,
-                        type = DutyTimeType.CURRENT
+                        type = TimeType.CURRENT
                     )
                 )
                 if (endTime != limitRange.last) {
@@ -182,13 +182,13 @@ fun DialView(
                         EditDutyTime(
                             start = endTime,
                             end = limitRange.last,
-                            type = DutyTimeType.NEXT
+                            type = TimeType.NEXT
                         )
                     )
                 }
             }
 
-            DutyTimeEditType.EDIT -> {
+            TimeEditType.EDIT -> {
                 val canAddPrevious =
                     hasPre && !previousRange.all { pRange -> currentRange.any { cRange -> cRange.first <= pRange.first && cRange.last >= pRange.last } }
                 val canAddNext =
@@ -199,7 +199,7 @@ fun DialView(
                             EditDutyTime(
                                 start = if (canAddNext) limitRange.first else endTime,
                                 end = startTime,
-                                type = DutyTimeType.PREVIOUS
+                                type = TimeType.PREVIOUS
                             )
                         )
                     } else {
@@ -207,7 +207,7 @@ fun DialView(
                             EditDutyTime(
                                 start = limitRange.first,
                                 end = startTime,
-                                type = DutyTimeType.PREVIOUS
+                                type = TimeType.PREVIOUS
                             )
                         )
                     }
@@ -216,7 +216,7 @@ fun DialView(
                     EditDutyTime(
                         start = startTime,
                         end = endTime,
-                        type = DutyTimeType.CURRENT
+                        type = TimeType.CURRENT
                     )
                 )
 
@@ -226,7 +226,7 @@ fun DialView(
                             EditDutyTime(
                                 start = endTime,
                                 end = if (canAddPrevious) limitRange.last else startTime,
-                                type = DutyTimeType.NEXT
+                                type = TimeType.NEXT
                             )
                         )
                     } else {
@@ -234,7 +234,7 @@ fun DialView(
                             EditDutyTime(
                                 start = endTime,
                                 end = limitRange.last,
-                                type = DutyTimeType.NEXT
+                                type = TimeType.NEXT
                             )
                         )
                     }
@@ -408,10 +408,10 @@ fun DialView(
                     val resultList = getResultList()
                     var showMergeUp = false
                     var showMergeDown = false
-                    if (hasPre && resultList.none { it.type == DutyTimeType.PREVIOUS }) {
+                    if (hasPre && resultList.none { it.type == TimeType.PREVIOUS }) {
                         showMergeUp = true
                     }
-                    if (hasNext && resultList.none { it.type == DutyTimeType.NEXT }) {
+                    if (hasNext && resultList.none { it.type == TimeType.NEXT }) {
                         showMergeDown = true
                     }
                     warningText = "是否确定覆盖执勤时段\n"
@@ -581,7 +581,7 @@ private fun IndicatorComponent(
     end: Int = 24,
     limitRange: IntRange = start..end,
     enable: Boolean = false,
-    editType: DutyTimeEditType = DutyTimeEditType.NORMAL,
+    editType: TimeEditType = TimeEditType.NORMAL,
     circleSize: Dp = 200.dp,
     circleStroke: Dp = 100.dp,
     sweepColor: Color = Color(0xFFFFA0C0),
@@ -714,7 +714,7 @@ private fun IndicatorComponent(
             }
         } else {
             if (!inLimitRange(start)) return
-            if (!isFullTime() || editType == DutyTimeEditType.EDIT) {
+            if (!isFullTime() || editType == TimeEditType.EDIT) {
                 if (start in endTime..limitRange.last) return
             }
             val startOffset = start - limitRange.first
@@ -771,7 +771,7 @@ private fun IndicatorComponent(
             }
         } else {
             if (!inLimitRange(end)) return
-            if (!isFullTime() || editType == DutyTimeEditType.EDIT) {
+            if (!isFullTime() || editType == TimeEditType.EDIT) {
                 if (end in limitRange.first..startTime) return
             }
             val startOffset = startTime - limitRange.first

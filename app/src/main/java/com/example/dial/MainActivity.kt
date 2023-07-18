@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,22 +18,19 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colors.background
             ) {
-                DialView(start = 4, end = 16, editType = DutyTimeEditType.EDIT)
+                Greeting(startTime = 3, endTime = 18, editType = TimeEditType.SPLIT)
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun Greeting(startTime: Int, endTime: Int, editType: TimeEditType, modifier: Modifier = Modifier) {
+    DialView(start = startTime, end = endTime, editType = editType, modifier = modifier)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    Greeting("Android")
+    Greeting(startTime = 3, endTime = 15, editType = TimeEditType.EDIT)
 }
